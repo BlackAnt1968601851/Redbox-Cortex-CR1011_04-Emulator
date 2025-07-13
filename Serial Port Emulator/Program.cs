@@ -46,9 +46,25 @@ namespace Serial_Port_Emulator
                 {
                     string command = readCommand(buffer);
                     Console.WriteLine(command);
+                    //Console.WriteLine(Convert.ToHexString(buffer));
                     if (command == "G(21D)")
                     {
                         Console.WriteLine("Get USB Speed");
+                        serialport.Write(Convert.FromHexString("01581E61702F6430303030303030310004"), 0, 17);
+                    }
+                    if (command == "G(42)")
+                    {
+                        Console.WriteLine("Expect Acknowledgement From Host");
+                        serialport.Write(Convert.FromHexString("01581E61702F6430303030303030310004"), 0, 17);
+                    }
+                    if (command == "G(08)")
+                    {
+                        Console.WriteLine("Reader Packet Format");
+                        serialport.Write(Convert.FromHexString("01581E61702F6430303030303030320004"), 0, 17);
+                    }
+                    if (command.Contains("Y") == true)
+                    {
+                        Console.WriteLine("Acknowlegement Signal");
                         serialport.Write(Convert.FromHexString("01581E61702F6430303030303030310004"), 0, 17);
                     }
                 }
