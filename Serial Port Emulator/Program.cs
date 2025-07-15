@@ -9,7 +9,6 @@ namespace Serial_Port_Emulator
         static void Main(string[] args)
         {
             device();
-            //Packet.readCommand(Convert.FromHexString("EEEEEEEE470428343229003933"));
         }
         static void device()
         {
@@ -43,7 +42,11 @@ namespace Serial_Port_Emulator
                     {
                         Console.WriteLine("Acknowlegement Signal");
                     }
-                    if (command.commandtype == "I")
+                    if (command.commandtype == "I" & Encoding.UTF8.GetString(command.data) == "b")
+                    {
+                        Console.WriteLine("Device does not have a battery ignoring.");
+                    }
+                    else if (command.commandtype == "I")
                     {
                         Console.WriteLine("Sending Device Info.");
                         serialport.Write(Convert.FromHexString("01585231013DB70CB600001277004501581E61702F6931333036313330366E6F6E653030323038323137373241303630303030303038303030373030313730303733303030320963642831362E312E3335290004FFFF"), 0, 86);
