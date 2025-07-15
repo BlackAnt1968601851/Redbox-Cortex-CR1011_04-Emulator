@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Serial_Port_Emulator
+﻿namespace Serial_Port_Emulator
 {
     internal static class CRC
     {
@@ -285,12 +279,12 @@ namespace Serial_Port_Emulator
             return (ushort)(((uint)initialValue << 8) ^ Table[(initialValue >> 8) ^ data]);
         }
         private static readonly byte[] Prefix = new byte[4]
-{
+        {
             238,
             238,
             238,
             238
-};
+        };
         internal static byte[] PrepCommand(byte[] baseCommand)
         {
             var byteList = new List<byte>(Prefix.Length + baseCommand.Length + 2);
