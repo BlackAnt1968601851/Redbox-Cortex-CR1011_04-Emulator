@@ -9,6 +9,7 @@ namespace Serial_Port_Emulator
         static void Main(string[] args)
         {
             device();
+            //Packet.readCommand(Convert.FromHexString("EEEEEEEE470428343229003933"));
         }
         static void device()
         {
@@ -22,7 +23,7 @@ namespace Serial_Port_Emulator
                 {
                     Packet.CortexPacket command = Packet.readCommand(buffer);
                     Console.WriteLine(command.commandtype + Encoding.UTF8.GetString(command.data));
-                    Console.WriteLine(Convert.ToHexString(buffer));
+                    
                     if (command.commandtype == "G" & Encoding.UTF8.GetString(command.data) == "(21D)")
                     {
                         Console.WriteLine("Get USB Speed");

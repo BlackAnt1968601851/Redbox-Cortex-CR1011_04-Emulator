@@ -21,6 +21,7 @@ namespace Serial_Port_Emulator
         public static CortexPacket readCommand(byte[] commandbytes)
         {
             CortexPacket packet = new CortexPacket();
+            packet.validpacket = false;
             byte[] prefix = new byte[4];
             byte[] commandtype = new byte[1];
             byte[] sizeencoded = new byte[4];
@@ -37,8 +38,24 @@ namespace Serial_Port_Emulator
             packet.datasize = datasize;
             packet.data = data;
             packet.reserved = Convert.FromHexString("00");
-            packet.validpacket = true;
             packet.crc14 = crc14;
+            byte[] commandbyteswithoutcrc = new byte[commandbytes.Length - 2];
+            Array.Copy(commandbytes, 0, commandbyteswithoutcrc, 0, commandbytes.Length - 2);
+            byte[] crcoriginalcheck = Convert.FromHexString(Convert.ToHexString(Encoding.UTF8.GetBytes(packet.commandtype)) + Convert.ToHexString(new byte[] { (byte)packet.datasize }) + Convert.ToHexString(packet.data) + "00");
+            if (Convert.ToHexString(commandbytes) == Convert.ToHexString(CRC.PrepCommand(crcoriginalcheck)))
+            {
+                packet.validpacket = true;
+            }
+            if (packet.validpacket == true)
+            {
+                Console.WriteLine("CRC Check: Success");
+            }
+            if (packet.validpacket == false)
+            {
+                Console.WriteLine("CRC Check: Failed");
+            }
+            Console.WriteLine(Convert.ToHexString(commandbytes));
+            Console.WriteLine(Convert.ToHexString(commandbyteswithoutcrc));
             return packet;
         }
     }
