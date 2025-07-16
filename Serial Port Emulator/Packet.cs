@@ -14,6 +14,58 @@ namespace Serial_Port_Emulator
             public byte[] reserved;
             public byte[] crc14;
         }
+        public struct ResponsePacket
+        {
+            public bool validpacket;
+            public byte[] ReaderID;
+            public int packetnumber;
+            public byte[] timestamp;
+            public int datasize;
+            public byte[] data;
+            public byte[] crc16;
+            public byte[] rawdata;
+        }
+        public static ResponsePacket readResponse(byte[] commandbytes)
+        {
+            ResponsePacket response = new ResponsePacket();
+            response.validpacket = false;
+            response.rawdata = commandbytes;
+            byte[] ReaderID = new byte[4];
+            byte[] packetnumber = new byte[1];
+            byte[] timestamp = new byte[4];
+            byte[] datasize = new byte[2];
+            Array.Copy(commandbytes, 4, ReaderID, 0, 4);
+            Array.Copy(commandbytes, 8, packetnumber, 0, 1);
+            Array.Copy(commandbytes, 9, timestamp, 0, 4);
+            Array.Copy(commandbytes, 13, datasize, 0, 2);
+            Array.Reverse(datasize);
+            packetnumber = Convert.FromHexString(Convert.ToHexString(packetnumber) + "00");
+            response.packetnumber = BitConverter.ToInt16(packetnumber);
+            response.ReaderID = ReaderID;
+            response.timestamp = timestamp;
+            response.datasize = BitConverter.ToInt16(datasize);
+            byte[] data = new byte[response.datasize];
+            Array.Copy(commandbytes, 15, data, 0, response.datasize);
+            response.data = data;
+            byte[] crc16 = new byte[2];
+            Array.Copy(commandbytes, 15 + response.datasize, crc16, 0, 2);
+            byte[] commandbyteswithoutcrc = new byte[commandbytes.Length - 2];
+            Array.Copy(commandbytes, 0, commandbyteswithoutcrc, 0, commandbytes.Length - 2);
+            if (Convert.ToHexString(CRC.CRC16(0, commandbyteswithoutcrc)) == Convert.ToHexString(crc16))
+            {
+                response.validpacket = true;
+            }
+            Console.WriteLine("Raw Response: " + Convert.ToHexString(response.rawdata));
+            Console.WriteLine("Raw Response in UTF8: " + Encoding.UTF8.GetString(commandbytes));
+            Console.WriteLine("Reader ID: " + Convert.ToHexString(response.ReaderID));
+            Console.WriteLine("Packet Number: " + response.packetnumber.ToString());
+            Console.WriteLine("Time Stamp: " + Convert.ToHexString(response.timestamp));
+            Console.WriteLine("Packet Size: " + response.datasize.ToString());
+            Console.WriteLine("Data: " + Convert.ToHexString(response.data));
+            Console.WriteLine("CRC: " + Convert.ToHexString(crc16));
+            Console.WriteLine("CRC Valid: " + response.validpacket);
+            return response;
+        }
         public static CortexPacket readCommand(byte[] commandbytes)
         {
             CortexPacket packet = new CortexPacket();

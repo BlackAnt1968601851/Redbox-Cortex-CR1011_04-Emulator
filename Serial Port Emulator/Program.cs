@@ -1,6 +1,8 @@
 ﻿using System.IO.Ports;
 using System.Text;
-
+using ResponsePacket = Serial_Port_Emulator.Packet.ResponsePacket;
+using CortexPacket = Serial_Port_Emulator.Packet.CortexPacket;
+using System.Diagnostics;
 namespace Serial_Port_Emulator
 {
     internal class Program
@@ -19,7 +21,7 @@ namespace Serial_Port_Emulator
                 byte[] buffer = new byte[bytestoread];
                 if (serialport.Read(buffer, 0, bytestoread) != 0)
                 {
-                    Packet.CortexPacket command = Packet.readCommand(buffer);
+                    CortexPacket command = Packet.readCommand(buffer);
                     Console.WriteLine(command.commandtype + Encoding.UTF8.GetString(command.data));
                     
                     if (command.commandtype == "G" & Encoding.UTF8.GetString(command.data) == "(21D)")
